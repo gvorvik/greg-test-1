@@ -5,7 +5,6 @@ class CreateWallPost extends Component {
         super(props);
         this.state = {
             comment: '',
-
         }
     }
 
@@ -15,7 +14,6 @@ class CreateWallPost extends Component {
 
     handleSubmit = (e) => {
         e.preventDefault();
-        console.log('submitted', this.state);
         this.setState({comment: ''});
     }
 

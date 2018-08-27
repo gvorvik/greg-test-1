@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import axios from 'axios';
 
 class Login extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            username: '',
-            password: '',
+            userEmail: 'ucap.ops.manager@gmail.com',
+            password: 'testpass',
         }
     }
 
@@ -13,26 +15,44 @@ class Login extends Component {
         this.setState({[e.target.name]: e.target.value})
     }
 
-    handleSubmit = (e) => {
+    submitLoginInfo = (e) => {
         e.preventDefault();
-        console.log(this.state);
-        this.setState({
-            username: '',
-            password: '',
-        });
+        let data = {
+            client_id: "careerprepped",
+            grant_type: "password",
+            email: this.state.userEmail,
+            password: this.state.password
+            };
+            axios({
+                method: 'POST',
+                url: 'https://devapi.careerprepped.com/oauth',
+                data,
+            })
+            .then(response => {
+                this.props.dispatch({
+                    type: 'USER_INFO',
+                    payload: response.data
+                });
+                this.setState({
+                    userEmail: '',
+                    password: '',
+                });
+                this.props.history.push('/home');
+            })
+            .catch(err => console.log(err));
     }
 
     render() {
         return <div>
-            <h1>Hello Login</h1>
-            <form onSubmit={this.handleSubmit}>
+            <h1>Login</h1>
+            <form onSubmit={this.submitLoginInfo}>
                 <div>
-                    <label htmlFor="username">Username</label>
-                    <input onChange={this.handleChange} name="username" id="username" type="text" />
+                    <label htmlFor="username">Email</label>
+                    <input value={this.state.userEmail} onChange={this.handleChange} name="userEmail" id="userEmail" type="text" />
                 </div>
                 <div>
                     <label htmlFor="password">Password</label>
-                    <input onChange={this.handleChange} name="password" id="password" type="password" />
+                    <input value={this.state.password} onChange={this.handleChange} name="password" id="password" type="password" />
                 </div>
                 <input type="submit"/>
             </form>
@@ -40,4 +60,4 @@ class Login extends Component {
     }
 }
 
-export default Login;
+export default connect()(Login);

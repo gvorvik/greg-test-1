@@ -15,7 +15,7 @@ class App extends Component {
     return (
       <Router>
         <Switch>
-          <Redirect exact from="/" to="/home"/>
+          <Redirect exact from="/" to="/login"/>
           <Route 
             path="/login"
             component={Login}
