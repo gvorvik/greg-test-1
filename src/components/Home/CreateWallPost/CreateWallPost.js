@@ -1,4 +1,11 @@
 import React, {Component} from 'react';
+import { connect } from 'react-redux';
+import axios from 'axios';
+
+const mapStateToProps = state => ({
+    user: state.user.userReducer,
+    wall: state.wall.wallReducer,
+});
 
 class CreateWallPost extends Component {
     constructor(props) {
@@ -12,9 +19,27 @@ class CreateWallPost extends Component {
         this.setState({[e.target.name]: e.target.value});
     }
 
+
     handleSubmit = (e) => {
         e.preventDefault();
-        this.setState({comment: ''});
+        let objToSend = {
+            comment: this.state.comment,
+            wall: this.props.wall.id,
+        }
+        const AuthStr = `${this.props.user.token_type} ${this.props.user.access_token}`;
+        axios.post('https://devapi.careerprepped.com/discussion/wall_comment', objToSend, { 'headers': { 'Authorization': AuthStr } })
+        .then(response => {
+            console.log(response.data);
+            let action = {
+                type: "SET_COMMENT",
+                payload: {
+                    comment: response.data.comment
+                }
+            }
+            this.props.dispatch(action);
+            this.setState({comment: ''});
+        })
+        .catch(err => console.log(err))
     }
 
     render() {
@@ -28,4 +53,4 @@ class CreateWallPost extends Component {
     }
 }
 
-export default CreateWallPost;
+export default connect(mapStateToProps)(CreateWallPost);
